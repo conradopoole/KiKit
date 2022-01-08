@@ -1,7 +1,8 @@
 from pcbnewTransition import pcbnew
 import re
 
-def references(board, show, pattern):
+def references(board, show, showValues, pattern):
     for footprint in board.GetFootprints():
         if re.match(pattern, footprint.GetReference()):
             footprint.Reference().SetVisible(show)
+            footprint.Value().SetVisible(showValues)

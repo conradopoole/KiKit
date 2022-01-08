@@ -30,7 +30,7 @@ class HideReferencesDialog(wx.Dialog):
         self.Bind(wx.EVT_TEXT, self.OnPatternChange, id=self.pattern.GetId())
         item_grid.Add(self.pattern, 1, wx.EXPAND)
 
-        label = wx.StaticText(panel, label="What to do:",
+        label = wx.StaticText(panel, label="References:",
             size=wx.Size(200, -1),
             style=wx.ALIGN_RIGHT)
         label.Wrap(200)
@@ -39,6 +39,16 @@ class HideReferencesDialog(wx.Dialog):
             choices=["Show", "Hide"])
         self.action.SetSelection(1)
         item_grid.Add(self.action, 1, wx.EXPAND)
+
+        label = wx.StaticText(panel, label="Values:",
+            size=wx.Size(200, -1),
+            style=wx.ALIGN_RIGHT)
+        label.Wrap(200)
+        item_grid.Add(label, 1, wx.ALIGN_CENTRE_VERTICAL)
+        self.valuesAction = wx.Choice(panel, style=wx.CB_DROPDOWN,
+            choices=["Show", "Hide"])
+        self.valuesAction.SetSelection(1)
+        item_grid.Add(self.valuesAction, 1, wx.EXPAND)
 
         label = wx.StaticText(panel,
             label="Mathing references:",
@@ -78,6 +88,9 @@ class HideReferencesDialog(wx.Dialog):
     def GetShowLabels(self):
         return self.action.GetSelection() == 0
 
+     def GetShowValueLabels(self):
+        return self.valuesAction.GetSelection() == 0
+
     def GetPattern(self):
         return self.pattern.GetValue()
 
@@ -107,7 +120,7 @@ class HideReferencesPlugin(pcbnew.ActionPlugin):
     def defaults(self):
         self.name = "KiKit: Show/hide references"
         self.category = "KiKit"
-        self.description = "Show/hide references in the board based on regular expression"
+        self.description = "Show/hide references and/or values in the board based on regular expression"
         self.icon_file_name = os.path.join(PKG_BASE, "resources", "graphics", "removeRefIcon_24x24.png")
         self.show_toolbar_button = True
 
@@ -118,7 +131,7 @@ class HideReferencesPlugin(pcbnew.ActionPlugin):
             ok = dialog.ShowModal()
             if not ok:
                 return
-            modify.references(board, dialog.GetShowLabels(), dialog.GetPattern())
+            modify.references(board, dialog.GetShowLabels(), dialog.GetShowValueLabels(), dialog.GetPattern())
         except Exception as e:
             dlg = wx.MessageDialog(None, f"Cannot perform: {e}", "Error", wx.OK)
             dlg.ShowModal()
